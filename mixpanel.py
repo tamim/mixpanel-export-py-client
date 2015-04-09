@@ -64,8 +64,6 @@ class Mixpanel(object):
             # here is the fix
             data_list = "[" + ",".join(data.strip().split("\n")) + "]"
             return json.loads(data_list)
-                
-        
 
     def unicode_urlencode(self, params):
         """
@@ -117,11 +115,9 @@ if __name__ == '__main__':
         api_key = 'YOUR API KEY',
         api_secret = 'API SECRET KEY'
     )
-        
     data = api.request(['export'], {
         'from_date' : '2015-01-01',
         'to_date' : '2015-01-31',
         'event' : ['MIXPANEL_EVENT_BUY']
     })
-    
     print data
