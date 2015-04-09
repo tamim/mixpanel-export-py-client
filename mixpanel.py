@@ -22,7 +22,6 @@ import hashlib
 import urllib
 import urllib2
 import time
-import sys
 try:
     import json
 except ImportError:
