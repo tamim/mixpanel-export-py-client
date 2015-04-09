@@ -17,10 +17,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Code updated by - Tamim Shahriar (http://subeen.com)
 
 import hashlib
 import urllib
-import urllib2
+import requests
 import time
 try:
     import json
@@ -50,20 +51,8 @@ class Mixpanel(object):
 
         request_url = '/'.join([self.ENDPOINT, str(self.VERSION)] + methods) + '/?' + self.unicode_urlencode(params)
 
-        request = urllib2.urlopen(request_url, timeout=600)
-        data = request.read()
-        
-        try:
-            return json.loads(data)
-        except ValueError as e:
-            if str(e).startswith("Extra data") is False:
-                print e
-                return
-            # the Extra data error is caused by the API response
-            # it returns each json object in a new line
-            # here is the fix
-            data_list = "[" + ",".join(data.strip().split("\n")) + "]"
-            return json.loads(data_list)
+        resp = requests.get(request_url, timeout=600, stream=True)        
+        return resp
 
     def unicode_urlencode(self, params):
         """
@@ -113,11 +102,16 @@ class Mixpanel(object):
 if __name__ == '__main__':
     api = Mixpanel(
         api_key = 'YOUR API KEY',
-        api_secret = 'API SECRET KEY'
+        api_secret = 'SECRET KEY'
     )
-    data = api.request(['export'], {
-        'from_date' : '2015-01-01',
-        'to_date' : '2015-01-31',
-        'event' : ['MIXPANEL_EVENT_BUY']
+    resp = api.request(['export'], {
+        'from_date' : '2015-01-05',
+        'to_date' : '2015-01-06',
+        'event' : ['MIXPANEL_EVENT_NAME']
     })
-    print data
+    
+    for line in resp.iter_lines():
+        j_data = json.loads(line)
+        process(j_data)
+    
+    
